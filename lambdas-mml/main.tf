@@ -16,3 +16,8 @@ assume_role_policy = <<EOF
 }
 EOF
 }
+
+
+provider "aws" {
+  region = var.aws_region
+}
