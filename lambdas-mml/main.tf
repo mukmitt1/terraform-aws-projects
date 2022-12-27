@@ -19,7 +19,7 @@ provider "aws" {
   }
 
 resource "aws_dynamodb_table" "ddbtable" {
-  name             = "order"
+  name             = "temp_table"
   hash_key         = "executionId"
   billing_mode   = "PROVISIONED"
   read_capacity  = 5
