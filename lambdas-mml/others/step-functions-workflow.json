@@ -15,7 +15,7 @@
           "input.$": "$",
           "TaskToken.$": "$$.Task.Token"
         },
-        "FunctionName": var.lambda_function_name
+        "FunctionName": "MyLambdaFunction"
       },
       "Retry": [
         {

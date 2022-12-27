@@ -1,3 +1,7 @@
+#################################
+# IAM Role and policy for Lambda
+#################################
+
 resource "aws_iam_role" "lambda_trust_role" {
   name   = "lambda_Policy_Function_Role"
   assume_role_policy = file(var.lambda_role)
@@ -18,17 +22,10 @@ provider "aws" {
   region = var.aws_region
 }
 
-resource "aws_dynamodb_table" "ddbtable" {
-  name             = "temp_table"
-  hash_key         = "executionId"
-  billing_mode   = "PROVISIONED"
-  read_capacity  = 5
-  write_capacity = 5
-  attribute {
-  name = "executionId"
-  type = "S"
-  }
-}
+
+#################################
+# Lambda Creation
+#################################
 
 data "archive_file" "zip_the_python_code" {
   type        = "zip"
@@ -47,6 +44,27 @@ depends_on                     = [aws_iam_role_policy_attachment.attach_iam_poli
 }
 
 
+#################################
+# DynamoDB
+#################################
+
+resource "aws_dynamodb_table" "ddbtable" {
+  name             = "temp_table"
+  hash_key         = "executionId"
+  billing_mode   = "PROVISIONED"
+  read_capacity  = 5
+  write_capacity = 5
+  attribute {
+  name = "executionId"
+  type = "S"
+  }
+}
+
+#################################
+# IAM Role and policy for Step Function
+#################################
+
+
 resource "aws_iam_role" "lambda_trust_sf_role" {
   name   = "lambda_sf_Policy_Function_Role"
   assume_role_policy = file("others/sf_assume_role_policy.json")
@@ -63,9 +81,12 @@ resource "aws_iam_role_policy_attachment" "attach_iam_policy_to_iam_sf_role" {
  policy_arn  = aws_iam_policy.iam_policy_for_sf.arn
 }
 
+#################################
+# Step Function
+#################################
 // Create state machine for step function
 resource "aws_sfn_state_machine" "sfn_state_machine" {
-  name     = "sample-state-machine"
+  name     = var.step_name
   role_arn = "${aws_iam_role.lambda_trust_sf_role.arn}"
-  definition = file("others/step-functions-workflow.json")
+  definition = file(var.step_definition)
 }
