@@ -1,3 +1,6 @@
+#################################
+# Local variables
+#################################
 
 locals {
   required_tags = {
@@ -51,7 +54,7 @@ data "archive_file" "zip_the_python_code" {
 
 resource "aws_lambda_function" "terraform_lambda_func" {
 filename                       = "${path.module}/python/hello-python.zip"
-function_name                  = "MyLambdaFunction"
+function_name                  = "lambda_${local.name_suffix}"
 role                           = aws_iam_role.lambda_trust_role.arn
 handler                        = "index.lambda_handler"
 runtime                        = "python3.9"
@@ -105,7 +108,7 @@ resource "aws_iam_role_policy_attachment" "attach_iam_policy_to_iam_sf_role" {
 #################################
 // Create state machine for step function
 resource "aws_sfn_state_machine" "this" {
-  name     = var.step_name
+  name     = "sfn_${local.name_suffix}"
   role_arn = "${aws_iam_role.lambda_trust_sf_role.arn}"
   definition = file(var.step_definition)
   tags = local.tags
