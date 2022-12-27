@@ -110,6 +110,46 @@ resource "aws_iam_role_policy_attachment" "attach_iam_policy_to_iam_sf_role" {
 resource "aws_sfn_state_machine" "this" {
   name     = "sfn_${local.name_suffix}"
   role_arn = "${aws_iam_role.lambda_trust_sf_role.arn}"
-  definition = file(var.step_definition)
-  tags = local.tags
+  tags     = local.tags
+  definition = <<EOF
+  {
+    "Comment": "A description of my state machine",
+    "StartAt": "Process A",
+    "States": {
+      "Process A": {
+        "Type": "Pass",
+        "Next": "Process B"
+      },
+      "Process B": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::lambda:invoke.waitForTaskToken",
+        "ResultPath": "$.taskresult",
+        "Parameters": {
+          "Payload": {
+            "input.$": "$",
+            "TaskToken.$": "$$.Task.Token"
+          },
+          "FunctionName": "${aws_lambda_function.terraform_lambda_func.arn}"
+        },
+        "Retry": [
+          {
+            "ErrorEquals": [
+              "Lambda.ServiceException",
+              "Lambda.AWSLambdaException",
+              "Lambda.SdkClientException",
+              "Lambda.TooManyRequestsException"
+            ],
+            "IntervalSeconds": 2,
+            "MaxAttempts": 6,
+            "BackoffRate": 2
+          }
+        ],
+        "Next": "Process C"
+      },
+      "Process C": {
+        "Type": "Succeed"
+      }
+    }
+  }
+  EOF
 }
