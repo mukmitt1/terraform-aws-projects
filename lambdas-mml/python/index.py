@@ -12,19 +12,20 @@ import time
 
 
 dynamodb = boto3.resource('dynamodb')
+step_functions = boto3.client('stepfunctions')
+
 
 def lambda_handler(event, context):
 
     print('AAAAAAAAAAAAAAAAAAAAAAA')
-    print(context)
+    print('Context Test:',context)
+    print("PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP:", event)
 
     # Write message to DynamoDB
-    table = dynamodb.Table('order')
+    table = dynamodb.Table('temp_table')
 
-#    print("sssssssssssssssssss:", event['TaskToken'])
-    print("PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP:", event)
-    print("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ:", context)
 
+   #Insert data in temp table
     response1 = table.put_item(
         Item={
             'executionId': event['TaskToken'],
@@ -35,10 +36,12 @@ def lambda_handler(event, context):
         }
     )
 
+    # use for testing only. Even number, consider exception. Odd number -  system is working as expected
     x = random.randint(1, 6)
 
+    # in case even number, no need to stop the process and consider lambda program failure
     if x % 2 == 0:
-        print("Response is failure!")
+        print("Response failure!")
         return 'error'
     else:
         print("Response is successful!")
@@ -47,3 +50,7 @@ def lambda_handler(event, context):
                 'executionId': event['TaskToken']
             }
         )
+        response = step_functions.send_task_success(
+            taskToken=event['TaskToken'],
+            output="\"success\""
+    )
