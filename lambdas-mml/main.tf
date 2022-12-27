@@ -31,7 +31,6 @@ resource "aws_iam_policy" "iam_policy_for_lambda" {
 resource "aws_iam_role_policy_attachment" "attach_iam_policy_to_iam_role" {
  role        = aws_iam_role.lambda_trust_role.name
  policy_arn  = aws_iam_policy.iam_policy_for_lambda.arn
- tags = local.tags
 }
 
 provider "aws" {
@@ -99,7 +98,6 @@ resource "aws_iam_policy" "iam_policy_for_sf" {
 resource "aws_iam_role_policy_attachment" "attach_iam_policy_to_iam_sf_role" {
  role        = aws_iam_role.lambda_trust_sf_role.name
  policy_arn  = aws_iam_policy.iam_policy_for_sf.arn
- tags = local.tags
 }
 
 #################################
