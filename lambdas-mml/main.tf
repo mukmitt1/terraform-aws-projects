@@ -1,12 +1,12 @@
 resource "aws_iam_role" "lambda_trust_role" {
   name   = "lambda_Policy_Function_Role"
-  assume_role_policy = file("others/assume_role_policy.json")
+  assume_role_policy = file(var.lambda_role)
 }
 
 resource "aws_iam_policy" "iam_policy_for_lambda" {
  name         = "aws_iam_policy_for_terraform_aws_lambda_role"
  description  = "AWS IAM Policy for managing aws lambda role"
- policy = file("others/policy.json")
+ policy = file(var.lambda_role_policy)
 }
 
 resource "aws_iam_role_policy_attachment" "attach_iam_policy_to_iam_role" {
