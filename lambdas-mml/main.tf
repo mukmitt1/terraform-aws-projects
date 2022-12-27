@@ -1,5 +1,5 @@
-resource "aws_iam_role" "lambda_role" {
-  name   = "Spacelift_Test_Lambda_Function_Role"
+resource "aws_iam_role" "lambda_trust_role" {
+  name   = "lambda_Policy_Function_Role"
   assume_role_policy = file("others/assume_role_policy.json")
 }
 
@@ -10,13 +10,25 @@ resource "aws_iam_policy" "iam_policy_for_lambda" {
 }
 
 resource "aws_iam_role_policy_attachment" "attach_iam_policy_to_iam_role" {
- role        = aws_iam_role.lambda_role.name
+ role        = aws_iam_role.lambda_trust_role.name
  policy_arn  = aws_iam_policy.iam_policy_for_lambda.arn
 }
 
 provider "aws" {
   region = var.aws_region
   }
+
+resource "aws_dynamodb_table" "ddbtable" {
+  name             = "order"
+  hash_key         = "executionId"
+  billing_mode   = "PROVISIONED"
+  read_capacity  = 5
+  write_capacity = 5
+  attribute {
+  name = "executionId"
+  type = "S"
+  }
+}
 
 data "archive_file" "zip_the_python_code" {
   type        = "zip"
@@ -28,8 +40,8 @@ data "archive_file" "zip_the_python_code" {
 resource "aws_lambda_function" "terraform_lambda_func" {
 filename                       = "${path.module}/python/hello-python.zip"
 function_name                  = "Spacelift_Test_Lambda_Function"
-role                           = aws_iam_role.lambda_role.arn
+role                           = aws_iam_role.lambda_trust_role.arn
 handler                        = "index.lambda_handler"
-runtime                        = "python3.8"
+runtime                        = "python3.9"
 depends_on                     = [aws_iam_role_policy_attachment.attach_iam_policy_to_iam_role]
 }
