@@ -1,60 +1,27 @@
 resource "aws_iam_role" "lambda_role" {
-name   = "Spacelift_Test_Lambda_Function_Role"
-assume_role_policy = <<EOF
-{
- "Version": "2012-10-17",
- "Statement": [
-   {
-     "Action": "sts:AssumeRole",
-     "Principal": {
-       "Service": "lambda.amazonaws.com"
-     },
-     "Effect": "Allow",
-     "Sid": ""
-   }
- ]
-}
-EOF
+  name   = "Spacelift_Test_Lambda_Function_Role"
+  assume_role_policy = file("others/assume_role_policy.json")
 }
 
+resource "aws_iam_policy" "iam_policy_for_lambda" {
+ name         = "aws_iam_policy_for_terraform_aws_lambda_role"
+ description  = "AWS IAM Policy for managing aws lambda role"
+ policy = file("others/policy.json")
+}
+
+resource "aws_iam_role_policy_attachment" "attach_iam_policy_to_iam_role" {
+ role        = aws_iam_role.lambda_role.name
+ policy_arn  = aws_iam_policy.iam_policy_for_lambda.arn
+}
 
 provider "aws" {
   region = var.aws_region
- 
+
  skip_get_ec2_platforms      = true
   skip_metadata_api_check     = true
   skip_region_validation      = true
   skip_credentials_validation = true
   skip_requesting_account_id  = true
-}
-
-
-resource "aws_iam_policy" "iam_policy_for_lambda" {
- name         = "aws_iam_policy_for_terraform_aws_lambda_role"
- path         = "/"
- description  = "AWS IAM Policy for managing aws lambda role"
- policy = <<EOF
-{
- "Version": "2012-10-17",
- "Statement": [
-   {
-     "Action": [
-       "logs:CreateLogGroup",
-       "logs:CreateLogStream",
-       "logs:PutLogEvents"
-     ],
-     "Resource": "arn:aws:logs:*:*:*",
-     "Effect": "Allow"
-   }
- ]
-}
-EOF
-}
-
-
-resource "aws_iam_role_policy_attachment" "attach_iam_policy_to_iam_role" {
- role        = aws_iam_role.lambda_role.name
- policy_arn  = aws_iam_policy.iam_policy_for_lambda.arn
 }
 
 data "archive_file" "zip_the_python_code" {
