@@ -16,7 +16,7 @@ resource "aws_iam_role_policy_attachment" "attach_iam_policy_to_iam_role" {
 
 provider "aws" {
   region = var.aws_region
-  }
+}
 
 resource "aws_dynamodb_table" "ddbtable" {
   name             = "temp_table"

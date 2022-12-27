@@ -15,3 +15,9 @@ description = "Lambda execution policy"
 type        = string
 default     = "others/policy.json"
 }
+
+variable "lambda_function_name" {
+description = "Lambda function name"
+type        = string
+default     = "MyLambdaFunction"
+}
