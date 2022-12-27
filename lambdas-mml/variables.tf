@@ -23,9 +23,31 @@ default     = "MyLambdaFunction"
 }
 
 
+
+variable "resource_tags" {
+  description = "Tags to set for all resources"
+  type        = map(string)
+  default     = {}
+}
+
+
+variable "project_name" {
+  description = "Name of the project."
+  type        = string
+  default     = "project-stepfunction-async"
+}
+
+variable "environment" {
+  description = "Name of the environment."
+  type        = string
+  default     = "POC"
+}
+
+
 ################
 # Step Function
 ################
+
 
 variable "step_name" {
   description = "The name of the Step Function"
