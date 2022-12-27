@@ -39,7 +39,7 @@ data "archive_file" "zip_the_python_code" {
 
 resource "aws_lambda_function" "terraform_lambda_func" {
 filename                       = "${path.module}/python/hello-python.zip"
-function_name                  = "Spacelift_Test_Lambda_Function"
+function_name                  = "My_Lambda_Function"
 role                           = aws_iam_role.lambda_trust_role.arn
 handler                        = "index.lambda_handler"
 runtime                        = "python3.9"
