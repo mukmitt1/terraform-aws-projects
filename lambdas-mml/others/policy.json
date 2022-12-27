@@ -1,4 +1,4 @@
-{  
+{
   "Version": "2012-10-17",
   "Statement":[
     {
@@ -21,7 +21,7 @@
      "dynamodb:PutItem",
      "dynamodb:UpdateItem"
     ],
-    "Resource": "arn:aws:dynamodb:us-east-1:987456321456:table/myDB"
+    "Resource": "arn:aws:dynamodb:*:*:*"
    }
   ]
 }
