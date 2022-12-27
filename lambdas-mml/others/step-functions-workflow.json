@@ -1,0 +1,39 @@
+{
+  "Comment": "A description of my state machine",
+  "StartAt": "Process A",
+  "States": {
+    "Process A": {
+      "Type": "Pass",
+      "Next": "Process B"
+    },
+    "Process B": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke.waitForTaskToken",
+      "ResultPath": "$.taskresult",
+      "Parameters": {
+        "Payload": {
+          "input.$": "$",
+          "TaskToken.$": "$$.Task.Token"
+        },
+        "FunctionName": "arn:aws:lambda:us-east-1:*:function:My_Lambda_Function:$LATEST"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 6,
+          "BackoffRate": 2
+        }
+      ],
+      "Next": "Process C"
+    },
+    "Process C": {
+      "Type": "Succeed"
+    }
+  }
+}

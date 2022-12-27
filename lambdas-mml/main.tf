@@ -45,3 +45,27 @@ handler                        = "index.lambda_handler"
 runtime                        = "python3.9"
 depends_on                     = [aws_iam_role_policy_attachment.attach_iam_policy_to_iam_role]
 }
+
+
+resource "aws_iam_role" "lambda_trust_sf_role" {
+  name   = "lambda_sf_Policy_Function_Role"
+  assume_role_policy = file("others/sf_assume_role_policy.json")
+}
+
+resource "aws_iam_policy" "iam_policy_for_sf" {
+ name         = "aws_iam_policy_for_terraform_aws_sf_role"
+ description  = "AWS IAM SF Policy for managing aws lambda role"
+ policy = file("others/sf_policy.json")
+}
+
+resource "aws_iam_role_policy_attachment" "attach_iam_policy_to_iam_sf_role" {
+ role        = aws_iam_role.lambda_trust_sf_role.name
+ policy_arn  = aws_iam_policy.iam_policy_for_sf.arn
+}
+
+// Create state machine for step function
+resource "aws_sfn_state_machine" "sfn_state_machine" {
+  name     = "sample-state-machine"
+  role_arn = "${aws_iam_role.lambda_trust_sf_role.arn}"
+  definition = file("others/step-functions-workflow.json")
+}
