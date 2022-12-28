@@ -109,7 +109,7 @@ resource "aws_api_gateway_integration" "lambda" {
 
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = "${aws_lambda_function.terraform_lambda_func.arn}"
+  uri                     = "${aws_lambda_function.terraform_lambda_func.invoke_arn}"
 }
 
 resource "aws_api_gateway_method" "proxy_root" {
@@ -126,5 +126,5 @@ resource "aws_api_gateway_integration" "lambda_root" {
 
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = "${aws_lambda_function.terraform_lambda_func.arn}"
+  uri                     = "${aws_lambda_function.terraform_lambda_func.invoke_arn}"
 }
