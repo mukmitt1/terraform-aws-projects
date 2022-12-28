@@ -74,7 +74,7 @@ resource "aws_dynamodb_table" "agbtable" {
   read_capacity  = 5
   write_capacity = 5
   attribute {
-  name = "executionId"
+  name = "id"
   type = "S"
   }
   tags = local.tags
