@@ -133,7 +133,7 @@ resource "aws_api_gateway_integration" "lambda_root" {
 resource "aws_lambda_permission" "apigw" {
   statement_id  = "AllowAPIGatewayInvoke"
   action        = "lambda:InvokeFunction"
-  function_name = "${aws_lambda_function.example.function_name}"
+  function_name = "${aws_lambda_function.terraform_lambda_func.function_name}"
   principal     = "apigateway.amazonaws.com"
 
   # The /*/* portion grants access from any method on any resource
